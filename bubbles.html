@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bubbles</title>
+<title>Тихий полдень</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,400;1,9..144,200;1,9..144,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -28,10 +28,10 @@
   body {
     background: #f5e8ff;
     position: relative;
+    padding-bottom: 82px;
   }
 
   /* ==================== АНИМИРОВАННЫЙ ГРАДИЕНТ-МЕШ ==================== */
-  /* Плавающие радиальные градиенты на фиксированном слое — общий фон для всех страниц */
   .gradient-bg {
     position: fixed;
     inset: 0;
@@ -92,7 +92,7 @@
     50%      { transform: translate(15vw, -20vh) scale(1.15); }
   }
 
-  /* Лёгкая зернистость поверх */
+  /* Зернистость поверх */
   .grain {
     position: fixed;
     inset: 0;
@@ -286,7 +286,6 @@
     font-size: 0.9rem;
   }
 
-  /* Декоративная подпись внизу */
   .home-meta {
     position: absolute;
     bottom: 40px;
@@ -348,45 +347,25 @@
     font-weight: 400;
   }
 
-  /* Плеер */
-  .player {
-    margin-top: 50px;
-    padding: 36px;
-    background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(140, 180, 220, 0.15);
-    max-width: 520px;
-  }
-
-  .player-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 0.3em;
-    color: var(--ink-mute);
-    margin-bottom: 8px;
-  }
-
-  .player-title {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: 1.5rem;
-    color: var(--ink);
-    margin-bottom: 28px;
-  }
-
-  .player-controls {
+  /* ==================== МИНИ-ПЛЕЕР (постоянный, снизу) ==================== */
+  .mini-player {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 200;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 18px;
+    padding: 14px 36px;
+    background: rgba(255, 248, 240, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid rgba(74, 57, 96, 0.1);
+    box-shadow: 0 -12px 40px rgba(140, 180, 220, 0.18);
   }
 
-  .play-btn {
-    width: 64px; height: 64px;
+  .mini-play-btn {
+    flex-shrink: 0;
+    width: 48px; height: 48px;
     border-radius: 50%;
     border: none;
     background: linear-gradient(135deg, var(--accent), var(--accent-2));
@@ -396,50 +375,100 @@
     align-items: center;
     justify-content: center;
     transition: transform 0.2s, box-shadow 0.3s;
-    box-shadow: 0 8px 24px rgba(217, 111, 168, 0.35);
+    box-shadow: 0 6px 18px rgba(217, 111, 168, 0.35);
   }
 
-  .play-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 12px 32px rgba(217, 111, 168, 0.45);
+  .mini-play-btn:hover {
+    transform: scale(1.06);
+    box-shadow: 0 10px 28px rgba(217, 111, 168, 0.45);
   }
 
-  .play-btn svg { width: 22px; height: 22px; }
+  .mini-play-btn svg { width: 18px; height: 18px; }
 
-  /* Визуализация — плавающие точки */
-  .player-viz {
+  .mini-info { flex-shrink: 0; }
+
+  .mini-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--ink-mute);
+    margin-bottom: 2px;
+  }
+
+  .mini-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 1.05rem;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .mini-viz {
     flex: 1;
-    height: 40px;
+    max-width: 100px;
+    height: 28px;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
   }
 
   .viz-bar {
     flex: 1;
     background: linear-gradient(180deg, var(--accent), var(--accent-2));
     border-radius: 2px;
-    height: 4px;
-    transition: height 0.15s ease-out;
-    opacity: 0.4;
+    height: 3px;
+    opacity: 0.35;
   }
 
-  .player.playing .viz-bar {
+  .mini-player.playing .viz-bar {
     opacity: 0.8;
     animation: vizPulse 1.5s ease-in-out infinite;
   }
-  .player.playing .viz-bar:nth-child(1) { animation-delay: 0s;   }
-  .player.playing .viz-bar:nth-child(2) { animation-delay: 0.2s; }
-  .player.playing .viz-bar:nth-child(3) { animation-delay: 0.4s; }
-  .player.playing .viz-bar:nth-child(4) { animation-delay: 0.1s; }
-  .player.playing .viz-bar:nth-child(5) { animation-delay: 0.3s; }
-  .player.playing .viz-bar:nth-child(6) { animation-delay: 0.5s; }
-  .player.playing .viz-bar:nth-child(7) { animation-delay: 0.15s;}
-  .player.playing .viz-bar:nth-child(8) { animation-delay: 0.35s;}
+  .mini-player.playing .viz-bar:nth-child(1) { animation-delay: 0s;    }
+  .mini-player.playing .viz-bar:nth-child(2) { animation-delay: 0.2s;  }
+  .mini-player.playing .viz-bar:nth-child(3) { animation-delay: 0.4s;  }
+  .mini-player.playing .viz-bar:nth-child(4) { animation-delay: 0.1s;  }
+  .mini-player.playing .viz-bar:nth-child(5) { animation-delay: 0.3s;  }
+  .mini-player.playing .viz-bar:nth-child(6) { animation-delay: 0.5s;  }
+  .mini-player.playing .viz-bar:nth-child(7) { animation-delay: 0.15s; }
+  .mini-player.playing .viz-bar:nth-child(8) { animation-delay: 0.35s; }
 
   @keyframes vizPulse {
-    0%, 100% { height: 6px;  }
-    50%      { height: 32px; }
+    0%, 100% { height: 3px;  }
+    50%      { height: 22px; }
+  }
+
+  .mini-modes {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .mode-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    padding: 6px 13px;
+    border-radius: 999px;
+    border: 1px solid rgba(74, 57, 96, 0.15);
+    background: rgba(255, 255, 255, 0.4);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .mode-btn:hover {
+    background: rgba(255, 255, 255, 0.75);
+    color: var(--ink);
+  }
+
+  .mode-btn.active {
+    background: rgba(217, 111, 168, 0.15);
+    border-color: rgba(217, 111, 168, 0.4);
+    color: var(--accent);
   }
 
   /* ==================== ИНТЕРАКТИВ ==================== */
@@ -467,7 +496,7 @@
     max-width: 560px;
   }
 
-  /* Сцена с пузырями — вписана в страницу */
+  /* Сцена с пузырями */
   #bubble-stage {
     position: relative;
     width: calc(100% - 80px);
@@ -609,11 +638,33 @@
 
   /* ==================== АДАПТИВ ==================== */
   @media (max-width: 720px) {
+    body { padding-bottom: 118px; }
     nav { padding: 20px 24px; }
     .nav-link { padding: 8px 12px; font-size: 0.6rem; letter-spacing: 0.2em; }
-    .home, .music, .interactive-intro { padding-left: 24px; padding-right: 24px; }
+    .home, .interactive-intro { padding-left: 24px; padding-right: 24px; }
     .home-meta { right: 24px; bottom: 24px; }
     #bubble-stage { width: calc(100% - 32px); height: 65vh; border-radius: 24px; }
+
+    /* Плеер: первый ряд — кнопка + заголовок + viz, второй — режимы */
+    .mini-player {
+      padding: 10px 16px 8px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .mini-info { flex: 1; min-width: 0; }
+    .mini-viz { max-width: 56px; }
+    .mini-modes {
+      width: 100%;
+      justify-content: center;
+      padding-top: 7px;
+      border-top: 1px solid rgba(74, 57, 96, 0.08);
+      gap: 5px;
+    }
+    .mode-btn {
+      font-size: 0.52rem;
+      padding: 5px 11px;
+      letter-spacing: 0.14em;
+    }
   }
 
   @media (max-width: 480px) {
@@ -638,7 +689,6 @@
   <a href="#/" class="logo">bubbles<span class="logo-dot"></span></a>
   <ul class="nav-links">
     <li><a href="#/" class="nav-link" data-route="/">Главная</a></li>
-    <li><a href="#/music" class="nav-link" data-route="/music">Музыка</a></li>
     <li><a href="#/bubbles" class="nav-link" data-route="/bubbles">Интерактив</a></li>
   </ul>
 </nav>
@@ -646,15 +696,14 @@
 <main>
   <!-- ==================== ГЛАВНАЯ ==================== -->
   <section class="home page" data-page="/">
-    <div class="home-eyebrow">Тихий полдень · 2026</div>
+    <div class="home-eyebrow"></div>
     <h1 class="home-title">
-      Мыльные<br>
-      <span class="accent">пузыри</span>
+      Тихий<br>
+      <span class="accent">полдень</span>
     </h1>
     <p class="home-lede">
       Маленькое цифровое пространство, где можно ничего не делать —
-      только смотреть, как медленно поднимаются пузыри, и трогать их,
-      когда захочется услышать тихий «плоп».
+      только смотреть, наслаждаться и мыслить.
     </p>
     <a href="#/bubbles" class="home-cta">
       <span>Открыть сцену</span>
@@ -662,41 +711,6 @@
     </a>
     <div class="home-meta">
       © пустяки<br>
-      сделано из воздуха
-    </div>
-  </section>
-
-  <!-- ==================== МУЗЫКА ==================== -->
-  <section class="music page" data-page="/music">
-    <div class="page-eyebrow">Звук</div>
-    <h2 class="page-title">Из воздуха<br><em>и формул</em></h2>
-
-    <p class="music-text">
-      Здесь нет ни одного аудиофайла. <strong>Вся музыка собирается прямо
-      в браузере</strong> через Web Audio API — синтезатор оживает в момент
-      нажатия кнопки и затихает, когда ты уходишь со страницы.
-    </p>
-    <p class="music-text">
-      Эмбиент построен на пентатонике C-мажор: мягкие синусоидальные тона
-      с долгими атаками и затуханиями плавают слоями, никогда не повторяясь
-      в одном и том же сочетании.
-    </p>
-
-    <div class="player" id="player">
-      <div class="player-label">Композиция</div>
-      <div class="player-title">Бесконечный полдень</div>
-      <div class="player-controls">
-        <button class="play-btn" id="playBtn" aria-label="Воспроизвести">
-          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
-        </button>
-        <div class="player-viz">
-          <div class="viz-bar"></div><div class="viz-bar"></div>
-          <div class="viz-bar"></div><div class="viz-bar"></div>
-          <div class="viz-bar"></div><div class="viz-bar"></div>
-          <div class="viz-bar"></div><div class="viz-bar"></div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -733,36 +747,50 @@
   </section>
 </main>
 
+<!-- ==================== МИНИ-ПЛЕЕР (все страницы) ==================== -->
+<div class="mini-player" id="player">
+  <button class="mini-play-btn" id="playBtn" aria-label="Воспроизвести">
+    <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+  </button>
+  <div class="mini-info">
+    <div class="mini-label">Генерация</div>
+    <div class="mini-title" id="playerTitle">Бесконечный полдень</div>
+  </div>
+  <div class="mini-viz">
+    <div class="viz-bar"></div><div class="viz-bar"></div>
+    <div class="viz-bar"></div><div class="viz-bar"></div>
+    <div class="viz-bar"></div><div class="viz-bar"></div>
+    <div class="viz-bar"></div><div class="viz-bar"></div>
+  </div>
+  <div class="mini-modes">
+    <button class="mode-btn active" data-mode="ether">Эфир</button>
+    <button class="mode-btn" data-mode="crystal">Кристалл</button>
+    <button class="mode-btn" data-mode="drone">Дрон</button>
+    <button class="mode-btn" data-mode="drops">Капли</button>
+  </div>
+</div>
+
 <script>
 // ==================== HASH-РОУТИНГ ====================
-// Используем hash-роуты (#/, #/music, #/bubbles) — это работает на любом
-// статическом хостинге (включая GitHub Pages) без серверной настройки rewrite.
-const routes = ['/', '/music', '/bubbles'];
+const routes = ['/', '/bubbles'];
 
 function navigate() {
   const hash = window.location.hash.replace(/^#/, '') || '/';
   const route = routes.includes(hash) ? hash : '/';
 
-  // Подсветить активную страницу
   document.querySelectorAll('.page').forEach(el => {
     el.classList.toggle('active', el.dataset.page === route);
   });
 
-  // Подсветить активную ссылку в навигации
   document.querySelectorAll('.nav-link').forEach(el => {
     el.classList.toggle('active', el.dataset.route === route);
   });
 
-  // Управление сценой пузырей: запускаем только когда страница активна
   if (route === '/bubbles') {
     BubbleScene.start();
   } else {
     BubbleScene.stop();
-  }
-
-  // Останавливаем плеер на других страницах, чтобы не играл фоном
-  if (route !== '/music' && Player.isPlaying()) {
-    Player.toggle();
   }
 
   window.scrollTo(0, 0);
@@ -772,7 +800,6 @@ window.addEventListener('hashchange', navigate);
 window.addEventListener('DOMContentLoaded', navigate);
 
 // ==================== ОБЩИЙ АУДИО-ДВИЖОК ====================
-// Один AudioContext на всё приложение, разделяемый между плеером и пузырями.
 const Audio = {
   ctx: null,
   master: null,
@@ -787,18 +814,41 @@ const Audio = {
 
   resume() {
     if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+  },
+
+  // Быстрое затухание — отменяем запланированные изменения и рампаем к 0
+  fadeOut(dur = 0.2) {
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    this.master.gain.cancelScheduledValues(now);
+    this.master.gain.setValueAtTime(this.master.gain.value, now);
+    this.master.gain.linearRampToValueAtTime(0, now + dur);
+  },
+
+  // Нарастание после паузы
+  fadeIn(dur = 0.35) {
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    this.master.gain.cancelScheduledValues(now);
+    this.master.gain.setValueAtTime(this.master.gain.value, now);
+    this.master.gain.linearRampToValueAtTime(0.25, now + dur);
   }
 };
 
-// Пентатоника C-мажор — любые ноты звучат гармонично вместе
-const PENTATONIC = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
+// ==================== МУЗЫКАЛЬНЫЕ РЕЖИМЫ ====================
+const SCALES = {
+  ether:   [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25],
+  crystal: [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98],
+  drone:   [65.41, 87.31, 98.00, 130.81],
+  drops:   [440, 523.25, 659.25, 783.99, 880, 1046.50]
+};
 
-function playAmbientNote(getEnabled, scheduleNext) {
-  if (!getEnabled()) return;
+// Мягкие синусоидальные слои — тёплый эмбиент
+function playEtherNote(isActive) {
+  if (!isActive()) return;
   const ctx = Audio.ctx;
   const now = ctx.currentTime;
-
-  const freq = PENTATONIC[Math.floor(Math.random() * PENTATONIC.length)];
+  const freq = SCALES.ether[Math.floor(Math.random() * SCALES.ether.length)];
   const duration = 4 + Math.random() * 4;
 
   const osc1 = ctx.createOscillator();
@@ -806,33 +856,121 @@ function playAmbientNote(getEnabled, scheduleNext) {
   const gain = ctx.createGain();
   const filter = ctx.createBiquadFilter();
 
-  osc1.type = 'sine';
-  osc2.type = 'sine';
+  osc1.type = 'sine'; osc2.type = 'sine';
   osc1.frequency.value = freq;
   osc2.frequency.value = freq * 2;
   osc2.detune.value = (Math.random() - 0.5) * 8;
-
   filter.type = 'lowpass';
   filter.frequency.value = 1500;
   filter.Q.value = 1;
-
   gain.gain.setValueAtTime(0, now);
   gain.gain.linearRampToValueAtTime(0.06, now + duration * 0.4);
   gain.gain.linearRampToValueAtTime(0, now + duration);
 
   osc1.connect(filter); osc2.connect(filter);
-  filter.connect(gain);
-  gain.connect(Audio.master);
-
+  filter.connect(gain); gain.connect(Audio.master);
   osc1.start(now); osc2.start(now);
   osc1.stop(now + duration); osc2.stop(now + duration);
 
-  if (scheduleNext) {
-    const nextDelay = 1500 + Math.random() * 3500;
-    setTimeout(() => playAmbientNote(getEnabled, scheduleNext), nextDelay);
-  }
+  setTimeout(() => playEtherNote(isActive), 1500 + Math.random() * 3500);
 }
 
+// Треугольные волны — прозрачные колокольные тоны
+function playCrystalNote(isActive) {
+  if (!isActive()) return;
+  const ctx = Audio.ctx;
+  const now = ctx.currentTime;
+  const freq = SCALES.crystal[Math.floor(Math.random() * SCALES.crystal.length)];
+  const duration = 1.5 + Math.random() * 2.5;
+
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const gainHarm = ctx.createGain();
+  const filter = ctx.createBiquadFilter();
+
+  osc1.type = 'triangle'; osc2.type = 'sine';
+  osc1.frequency.value = freq;
+  osc2.frequency.value = freq * 3.01;
+  gainHarm.gain.value = 0.25;
+  filter.type = 'highpass';
+  filter.frequency.value = 400;
+  filter.Q.value = 0.5;
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.07, now + 0.04);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+  osc1.connect(filter);
+  osc2.connect(gainHarm); gainHarm.connect(filter);
+  filter.connect(gain); gain.connect(Audio.master);
+  osc1.start(now); osc2.start(now);
+  osc1.stop(now + duration + 0.05); osc2.stop(now + duration + 0.05);
+
+  setTimeout(() => playCrystalNote(isActive), 600 + Math.random() * 2000);
+}
+
+// Пилообразные волны с хорусом — глубокий гудящий дрон
+function playDroneNote(isActive) {
+  if (!isActive()) return;
+  const ctx = Audio.ctx;
+  const now = ctx.currentTime;
+  const freq = SCALES.drone[Math.floor(Math.random() * SCALES.drone.length)];
+  const duration = 8 + Math.random() * 8;
+
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const osc3 = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const filter = ctx.createBiquadFilter();
+
+  osc1.type = 'sawtooth'; osc2.type = 'sawtooth'; osc3.type = 'sine';
+  osc1.frequency.value = freq;
+  osc2.frequency.value = freq * 1.006;
+  osc3.frequency.value = freq * 2;
+  filter.type = 'lowpass';
+  filter.frequency.value = 350;
+  filter.Q.value = 2;
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.1, now + duration * 0.25);
+  gain.gain.linearRampToValueAtTime(0, now + duration);
+
+  osc1.connect(filter); osc2.connect(filter); osc3.connect(filter);
+  filter.connect(gain); gain.connect(Audio.master);
+  osc1.start(now); osc2.start(now); osc3.start(now);
+  osc1.stop(now + duration); osc2.stop(now + duration); osc3.stop(now + duration);
+
+  setTimeout(() => playDroneNote(isActive), 5000 + Math.random() * 6000);
+}
+
+// Нисходящие синусоиды — звук капель воды
+function playDropNote(isActive) {
+  if (!isActive()) return;
+  const ctx = Audio.ctx;
+  const now = ctx.currentTime;
+  const freq = SCALES.drops[Math.floor(Math.random() * SCALES.drops.length)];
+  const duration = 0.8 + Math.random() * 1.2;
+
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const filter = ctx.createBiquadFilter();
+
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(freq * 1.1, now);
+  osc.frequency.exponentialRampToValueAtTime(freq * 0.75, now + duration);
+  filter.type = 'bandpass';
+  filter.frequency.value = freq;
+  filter.Q.value = 6;
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.09, now + 0.008);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+  osc.connect(filter); filter.connect(gain); gain.connect(Audio.master);
+  osc.start(now); osc.stop(now + duration + 0.05);
+
+  setTimeout(() => playDropNote(isActive), 250 + Math.random() * 1200);
+}
+
+// ==================== ЗВУК ПУЗЫРЕЙ ====================
 function playPopSound(getEnabled) {
   if (!getEnabled()) return;
   const ctx = Audio.ctx;
@@ -846,65 +984,102 @@ function playPopSound(getEnabled) {
   const startFreq = 600 + Math.random() * 400;
   osc.frequency.setValueAtTime(startFreq, now);
   osc.frequency.exponentialRampToValueAtTime(80, now + 0.12);
-
   filter.type = 'lowpass';
   filter.frequency.setValueAtTime(2000, now);
   filter.frequency.exponentialRampToValueAtTime(200, now + 0.12);
   filter.Q.value = 8;
-
   gain.gain.setValueAtTime(0, now);
   gain.gain.linearRampToValueAtTime(0.4, now + 0.005);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
 
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(Audio.master);
-
-  osc.start(now);
-  osc.stop(now + 0.2);
+  osc.connect(filter); filter.connect(gain); gain.connect(Audio.master);
+  osc.start(now); osc.stop(now + 0.2);
 }
 
-// ==================== ПЛЕЕР НА СТРАНИЦЕ МУЗЫКИ ====================
+// ==================== ПЛЕЕР (постоянный) ====================
 const Player = (() => {
   let playing = false;
-  let started = false;
-  const playerEl = document.getElementById('player');
-  const btn = document.getElementById('playBtn');
-  const iconPlay = document.getElementById('playIcon');
+  let sessionToken = 0;
+  let currentMode = 'ether';
+
+  const playerEl  = document.getElementById('player');
+  const btn       = document.getElementById('playBtn');
+  const iconPlay  = document.getElementById('playIcon');
   const iconPause = document.getElementById('pauseIcon');
+  const titleEl   = document.getElementById('playerTitle');
+
+  const MODE_CONFIG = {
+    ether:   { title: 'Бесконечный полдень', fn: playEtherNote,   delays: [0, 800, 2200] },
+    crystal: { title: 'Звон тишины',          fn: playCrystalNote, delays: [0, 300, 700, 1400] },
+    drone:   { title: 'Земля гудит',           fn: playDroneNote,   delays: [0, 4000] },
+    drops:   { title: 'После дождя',           fn: playDropNote,    delays: [0, 150, 500] },
+  };
+
+  function startLayers() {
+    const token = ++sessionToken;
+    const cfg = MODE_CONFIG[currentMode];
+    const isActive = () => playing && sessionToken === token;
+    cfg.delays.forEach(delay => {
+      setTimeout(() => { if (isActive()) cfg.fn(isActive); }, delay);
+    });
+  }
+
+  function updateUI() {
+    playerEl.classList.toggle('playing', playing);
+    iconPlay.style.display  = playing ? 'none'  : 'block';
+    iconPause.style.display = playing ? 'block' : 'none';
+  }
 
   function toggle() {
     Audio.init();
     Audio.resume();
     playing = !playing;
-    playerEl.classList.toggle('playing', playing);
-    iconPlay.style.display = playing ? 'none' : 'block';
-    iconPause.style.display = playing ? 'block' : 'none';
+    updateUI();
+    if (playing) {
+      Audio.fadeIn(0.35);
+      startLayers();
+    } else {
+      sessionToken++;      // отменяем петли — новые ноты не запустятся
+      Audio.fadeOut(0.2);  // быстрое затухание уже играющих нот
+    }
+  }
 
-    if (playing && !started) {
-      // Стартуем три перекрывающиеся слоя
-      started = true;
-      playAmbientNote(() => playing, true);
-      setTimeout(() => playAmbientNote(() => playing, true), 800);
-      setTimeout(() => playAmbientNote(() => playing, true), 2200);
+  function setMode(modeId) {
+    const wasPlaying = playing;
+    sessionToken++;   // отменяем старые петли
+    playing = false;
+    if (wasPlaying) Audio.fadeOut(0.15);
+
+    currentMode = modeId;
+    titleEl.textContent = MODE_CONFIG[modeId].title;
+    document.querySelectorAll('.mode-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === modeId);
+    });
+
+    if (wasPlaying) {
+      setTimeout(() => {
+        playing = true;
+        Audio.fadeIn(0.3);
+        startLayers();
+      }, 180);
     }
   }
 
   btn.addEventListener('click', toggle);
+  document.querySelectorAll('.mode-btn').forEach(b => {
+    b.addEventListener('click', () => setMode(b.dataset.mode));
+  });
 
-  return {
-    toggle,
-    isPlaying: () => playing
-  };
+  return { toggle, isPlaying: () => playing };
 })();
 
 // ==================== СЦЕНА ПУЗЫРЕЙ ====================
 const BubbleScene = (() => {
-  const stage = document.getElementById('bubble-stage');
+  const stage      = document.getElementById('bubble-stage');
   const popCountEl = document.getElementById('popCount');
-  const soundBtn = document.getElementById('soundToggle');
-  const iconOff = document.getElementById('iconOff');
-  const iconOn = document.getElementById('iconOn');
+  const soundBtn   = document.getElementById('soundToggle');
+  const iconOff    = document.getElementById('iconOff');
+  const iconOn     = document.getElementById('iconOn');
 
   let bubbles = [];
   let popCount = 0;
@@ -913,7 +1088,6 @@ const BubbleScene = (() => {
   let soundEnabled = false;
   let running = false;
 
-  // Размер сцены измеряется по контейнеру, а не по окну
   function getSize() {
     const r = stage.getBoundingClientRect();
     return { w: r.width, h: r.height };
@@ -925,7 +1099,7 @@ const BubbleScene = (() => {
       this.size = 40 + Math.random() * 100;
       this.x = Math.random() * (w - this.size);
       this.y = h + this.size + Math.random() * 100;
-      this.vy = -(0.3 + Math.random() * 0.5);
+      this.vy = -(3.2 + Math.random() * 3.6);
       this.vx = (Math.random() - 0.5) * 0.3;
       this.swayPhase = Math.random() * Math.PI * 2;
       this.swaySpeed = 0.005 + Math.random() * 0.008;
@@ -933,7 +1107,7 @@ const BubbleScene = (() => {
 
       this.el = document.createElement('div');
       this.el.className = 'bubble';
-      this.el.style.width = this.size + 'px';
+      this.el.style.width  = this.size + 'px';
       this.el.style.height = this.size + 'px';
       this.el.style.transform = `translate(${this.x}px, ${this.y}px)`;
       this.el.addEventListener('click', () => this.pop());
@@ -943,7 +1117,7 @@ const BubbleScene = (() => {
 
     update() {
       if (!this.alive) return;
-      const { w, h } = getSize();
+      const { w } = getSize();
       this.swayPhase += this.swaySpeed;
       this.x += this.vx + Math.sin(this.swayPhase) * this.swayAmount;
       this.y += this.vy;
@@ -974,10 +1148,10 @@ const BubbleScene = (() => {
       const d = document.createElement('div');
       d.className = 'droplet';
       const size = 4 + Math.random() * 8;
-      d.style.width = size + 'px';
+      d.style.width  = size + 'px';
       d.style.height = size + 'px';
-      d.style.left = (cx - size / 2) + 'px';
-      d.style.top = (cy - size / 2) + 'px';
+      d.style.left   = (cx - size / 2) + 'px';
+      d.style.top    = (cy - size / 2) + 'px';
       stage.appendChild(d);
 
       const angle = Math.random() * Math.PI * 2;
@@ -1004,16 +1178,15 @@ const BubbleScene = (() => {
   }
 
   function spawn() {
-    if (bubbles.length < 30) bubbles.push(new Bubble());
+    if (bubbles.length < 60) bubbles.push(new Bubble());
   }
 
   function start() {
     if (running) return;
     running = true;
 
-    // Стартовая пачка с распределением по высоте
     const { h } = getSize();
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 16; i++) {
       setTimeout(() => {
         if (!running) return;
         const b = new Bubble();
@@ -1022,7 +1195,7 @@ const BubbleScene = (() => {
       }, i * 200);
     }
 
-    spawnInterval = setInterval(spawn, 800);
+    spawnInterval = setInterval(spawn, 400);
     tick();
   }
 
@@ -1035,14 +1208,13 @@ const BubbleScene = (() => {
     bubbles = [];
   }
 
-  // Кнопка звука
   soundBtn.addEventListener('click', () => {
     Audio.init();
     Audio.resume();
     soundEnabled = !soundEnabled;
     soundBtn.classList.toggle('active', soundEnabled);
-    iconOff.style.display = soundEnabled ? 'none' : 'block';
-    iconOn.style.display = soundEnabled ? 'block' : 'none';
+    iconOff.style.display = soundEnabled ? 'none'  : 'block';
+    iconOn.style.display  = soundEnabled ? 'block' : 'none';
   });
 
   return { start, stop };
