@@ -122,7 +122,7 @@
   @keyframes rise { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 
   /* ==================== ОБЩАЯ СЦЕНА ==================== */
-  .interactive { padding:0; position:relative; }
+  .interactive { padding-top:100px; position:relative; }
   .interactive-intro { padding:24px 50px 16px; max-width:900px; margin:0 auto; }
   .interactive-intro .page-title { margin-bottom:12px; }
   .interactive-text { font-family:'Fraunces',serif;font-weight:300;font-size:1.05rem;line-height:1.5;color:var(--ink-soft); }
@@ -251,7 +251,13 @@
     .nav-link { padding:8px 12px;font-size:0.6rem;letter-spacing:0.2em; }
     .home,.interactive-intro { padding-left:24px;padding-right:24px; }
     .home-meta { right:24px;bottom:24px; }
-    #maze-stage,#bubble-stage { width:calc(100% - 32px);height:62vh;border-radius:24px; }
+    .interactive { padding-top:70px; }
+    #maze-stage,#bubble-stage { width:calc(100% - 32px);height:calc(100svh - 360px);min-height:240px;border-radius:24px; }
+    .interactive-intro { padding-top:10px;padding-bottom:8px; }
+    .interactive-intro .page-eyebrow { display:none; }
+    .interactive-intro .page-title { font-size:clamp(1.6rem,5vw,2.4rem);margin-bottom:6px; }
+    .interactive-intro .interactive-text { display:none; }
+    .maze-reset-btn { margin-top:8px; }
     .mini-player { padding:10px 16px 8px;gap:10px;flex-wrap:wrap; }
     .mini-info { flex:1;min-width:0; }
     .mini-viz { max-width:56px; }
