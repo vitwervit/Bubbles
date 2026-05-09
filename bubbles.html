@@ -3,51 +3,554 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Пузыри</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<title>Bubbles</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,400;1,9..144,200;1,9..144,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --ink: #2d2440;
+    --ink-soft: #4a3960;
+    --ink-mute: #6b5a80;
+    --paper: #fff8f0;
+    --accent: #d96fa8;
+    --accent-2: #6fb5d9;
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   html, body {
     width: 100%;
-    height: 100%;
-    overflow: hidden;
-    cursor: none;
+    min-height: 100%;
+    overflow-x: hidden;
+    font-family: 'Fraunces', serif;
+    color: var(--ink);
   }
 
   body {
-    background:
-      radial-gradient(ellipse at 20% 10%, #ffd6e8 0%, transparent 45%),
-      radial-gradient(ellipse at 80% 20%, #c9e8ff 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 90%, #fff4d6 0%, transparent 55%),
-      linear-gradient(180deg, #e8f1ff 0%, #f5e6ff 50%, #fff0e8 100%);
-    font-family: 'Fraunces', serif;
+    background: #f5e8ff;
     position: relative;
   }
 
-  /* Лёгкая зернистость для атмосферы */
-  body::before {
-    content: '';
+  /* ==================== АНИМИРОВАННЫЙ ГРАДИЕНТ-МЕШ ==================== */
+  /* Плавающие радиальные градиенты на фиксированном слое — общий фон для всех страниц */
+  .gradient-bg {
     position: fixed;
     inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 1;
-    mix-blend-mode: multiply;
-    opacity: 0.5;
+    z-index: 0;
+    overflow: hidden;
+    background: linear-gradient(180deg, #e8f1ff 0%, #f5e6ff 50%, #fff0e8 100%);
   }
 
-  #scene {
+  .blob {
     position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.65;
+    will-change: transform;
+  }
+
+  .blob-1 {
+    width: 60vw; height: 60vw;
+    background: radial-gradient(circle, #ffd6e8 0%, transparent 70%);
+    top: -20vh; left: -10vw;
+    animation: drift1 22s ease-in-out infinite;
+  }
+  .blob-2 {
+    width: 55vw; height: 55vw;
+    background: radial-gradient(circle, #c9e8ff 0%, transparent 70%);
+    top: 10vh; right: -15vw;
+    animation: drift2 28s ease-in-out infinite;
+  }
+  .blob-3 {
+    width: 50vw; height: 50vw;
+    background: radial-gradient(circle, #fff4d6 0%, transparent 70%);
+    bottom: -20vh; left: 20vw;
+    animation: drift3 25s ease-in-out infinite;
+  }
+  .blob-4 {
+    width: 45vw; height: 45vw;
+    background: radial-gradient(circle, #e0d4ff 0%, transparent 70%);
+    bottom: 0vh; right: 10vw;
+    animation: drift4 30s ease-in-out infinite;
+  }
+
+  @keyframes drift1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%      { transform: translate(15vw, 10vh) scale(1.15); }
+    66%      { transform: translate(-5vw, 20vh) scale(0.9); }
+  }
+  @keyframes drift2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(-20vw, 25vh) scale(1.1); }
+  }
+  @keyframes drift3 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%      { transform: translate(-15vw, -10vh) scale(1.2); }
+    66%      { transform: translate(10vw, -25vh) scale(0.95); }
+  }
+  @keyframes drift4 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(15vw, -20vh) scale(1.15); }
+  }
+
+  /* Лёгкая зернистость поверх */
+  .grain {
+    position: fixed;
     inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+    opacity: 0.6;
+  }
+
+  /* ==================== НАВИГАЦИЯ ==================== */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 28px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 248, 240, 0.35);
+    border-bottom: 1px solid rgba(74, 57, 96, 0.08);
+  }
+
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 1.5rem;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+
+  .logo-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fff, var(--accent));
+    margin-left: 4px;
+    vertical-align: middle;
+    box-shadow: 0 0 12px rgba(217, 111, 168, 0.5);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 4px;
+    list-style: none;
+  }
+
+  .nav-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--ink-soft);
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 999px;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .nav-link:hover {
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  .nav-link.active {
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--ink);
+    box-shadow: 0 4px 16px rgba(140, 180, 220, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  /* ==================== ОБЩИЙ КОНТЕЙНЕР СТРАНИЦ ==================== */
+  main {
+    position: relative;
     z-index: 2;
+    min-height: 100vh;
+  }
+
+  .page {
+    display: none;
+    min-height: 100vh;
+    padding-top: 100px;
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .page.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ==================== ГЛАВНАЯ ==================== */
+  .home {
+    display: none;
+    min-height: 100vh;
+    padding: 100px 50px 50px;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .home.active { display: flex; }
+
+  .home-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4em;
+    color: var(--ink-mute);
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: rise 0.8s 0.1s ease-out forwards;
+  }
+
+  .home-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 200;
+    font-style: italic;
+    font-size: clamp(4rem, 14vw, 13rem);
+    line-height: 0.88;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: rise 1s 0.25s ease-out forwards;
+  }
+
+  .home-title .accent {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-style: italic;
+  }
+
+  .home-lede {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(1.1rem, 1.5vw, 1.4rem);
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 540px;
+    margin-bottom: 60px;
+    opacity: 0;
+    animation: rise 1s 0.45s ease-out forwards;
+  }
+
+  .home-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 32px 18px 36px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(74, 57, 96, 0.15);
+    border-radius: 999px;
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    text-decoration: none;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    width: fit-content;
+    box-shadow: 0 8px 24px rgba(140, 180, 220, 0.15);
+    opacity: 0;
+    animation: rise 1s 0.65s ease-out forwards;
+  }
+
+  .home-cta:hover {
+    background: rgba(255, 255, 255, 0.85);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(140, 180, 220, 0.25);
+  }
+
+  .home-cta-arrow {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+  }
+
+  /* Декоративная подпись внизу */
+  .home-meta {
+    position: absolute;
+    bottom: 40px;
+    right: 50px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--ink-mute);
+    opacity: 0.5;
+    text-align: right;
+    line-height: 2;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ==================== СТРАНИЦА МУЗЫКИ ==================== */
+  .music {
+    padding: 60px 50px 80px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .page-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4em;
+    color: var(--ink-mute);
+    margin-bottom: 24px;
+  }
+
+  .page-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 200;
+    font-style: italic;
+    font-size: clamp(3rem, 8vw, 6rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    margin-bottom: 50px;
+  }
+
+  .music-text {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    max-width: 620px;
+    margin-bottom: 24px;
+  }
+
+  .music-text strong {
+    color: var(--ink);
+    font-weight: 400;
+  }
+
+  /* Плеер */
+  .player {
+    margin-top: 50px;
+    padding: 36px;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(140, 180, 220, 0.15);
+    max-width: 520px;
+  }
+
+  .player-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--ink-mute);
+    margin-bottom: 8px;
+  }
+
+  .player-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 1.5rem;
+    color: var(--ink);
+    margin-bottom: 28px;
+  }
+
+  .player-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .play-btn {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.3s;
+    box-shadow: 0 8px 24px rgba(217, 111, 168, 0.35);
+  }
+
+  .play-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 32px rgba(217, 111, 168, 0.45);
+  }
+
+  .play-btn svg { width: 22px; height: 22px; }
+
+  /* Визуализация — плавающие точки */
+  .player-viz {
+    flex: 1;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .viz-bar {
+    flex: 1;
+    background: linear-gradient(180deg, var(--accent), var(--accent-2));
+    border-radius: 2px;
+    height: 4px;
+    transition: height 0.15s ease-out;
+    opacity: 0.4;
+  }
+
+  .player.playing .viz-bar {
+    opacity: 0.8;
+    animation: vizPulse 1.5s ease-in-out infinite;
+  }
+  .player.playing .viz-bar:nth-child(1) { animation-delay: 0s;   }
+  .player.playing .viz-bar:nth-child(2) { animation-delay: 0.2s; }
+  .player.playing .viz-bar:nth-child(3) { animation-delay: 0.4s; }
+  .player.playing .viz-bar:nth-child(4) { animation-delay: 0.1s; }
+  .player.playing .viz-bar:nth-child(5) { animation-delay: 0.3s; }
+  .player.playing .viz-bar:nth-child(6) { animation-delay: 0.5s; }
+  .player.playing .viz-bar:nth-child(7) { animation-delay: 0.15s;}
+  .player.playing .viz-bar:nth-child(8) { animation-delay: 0.35s;}
+
+  @keyframes vizPulse {
+    0%, 100% { height: 6px;  }
+    50%      { height: 32px; }
+  }
+
+  /* ==================== ИНТЕРАКТИВ ==================== */
+  .interactive {
+    padding: 0;
+    position: relative;
+  }
+
+  .interactive-intro {
+    padding: 30px 50px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .interactive-intro .page-title {
+    margin-bottom: 24px;
+  }
+
+  .interactive-text {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    max-width: 560px;
+  }
+
+  /* Сцена с пузырями — вписана в страницу */
+  #bubble-stage {
+    position: relative;
+    width: calc(100% - 80px);
+    max-width: 1200px;
+    height: 70vh;
+    margin: 30px auto 50px;
+    border-radius: 32px;
+    overflow: hidden;
+    background: linear-gradient(180deg,
+      rgba(232, 241, 255, 0.6),
+      rgba(245, 230, 255, 0.5) 50%,
+      rgba(255, 240, 232, 0.6));
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 30px 80px rgba(140, 180, 220, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    cursor: crosshair;
+  }
+
+  .stage-counter {
+    position: absolute;
+    top: 24px; right: 28px;
+    z-index: 5;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--ink-soft);
+    text-align: right;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .stage-counter .num {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 2.4rem;
+    display: block;
+    color: var(--ink);
+    margin-top: 4px;
+  }
+
+  .stage-hint {
+    position: absolute;
+    bottom: 24px; left: 28px;
+    z-index: 5;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--ink-mute);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .stage-sound {
+    position: absolute;
+    bottom: 24px; right: 28px;
+    z-index: 5;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(74, 57, 96, 0.2);
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    color: var(--ink-soft);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .stage-sound:hover { background: rgba(255, 255, 255, 0.8); }
+  .stage-sound.active {
+    background: rgba(255, 220, 240, 0.6);
+    border-color: rgba(217, 111, 168, 0.4);
+    color: var(--accent);
   }
 
   .bubble {
     position: absolute;
     border-radius: 50%;
-    pointer-events: auto;
-    cursor: none;
     background:
       radial-gradient(circle at 30% 30%,
         rgba(255, 255, 255, 0.9) 0%,
@@ -65,53 +568,36 @@
     box-shadow:
       inset 0 0 20px rgba(255, 255, 255, 0.3),
       inset -8px -8px 30px rgba(180, 200, 255, 0.2),
-      0 8px 32px rgba(140, 180, 220, 0.15),
-      0 0 40px rgba(255, 220, 240, 0.2);
+      0 8px 32px rgba(140, 180, 220, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.4);
     transition: transform 0.15s ease-out;
     will-change: transform;
+    cursor: pointer;
   }
 
   .bubble::before {
     content: '';
     position: absolute;
-    top: 12%;
-    left: 18%;
-    width: 30%;
-    height: 25%;
+    top: 12%; left: 18%;
+    width: 30%; height: 25%;
     background: radial-gradient(ellipse, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 70%);
     border-radius: 50%;
     filter: blur(2px);
   }
 
-  .bubble::after {
-    content: '';
-    position: absolute;
-    bottom: 18%;
-    right: 22%;
-    width: 12%;
-    height: 10%;
-    background: radial-gradient(ellipse, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 70%);
-    border-radius: 50%;
-  }
+  .bubble:hover { transform: scale(1.05); }
 
-  .bubble:hover {
-    transform: scale(1.05);
-  }
-
-  /* Анимация лопания */
   .pop {
     animation: pop 0.45s ease-out forwards;
     pointer-events: none;
   }
 
   @keyframes pop {
-    0%   { transform: scale(1); opacity: 1; filter: blur(0); }
+    0%   { transform: scale(1);    opacity: 1;   filter: blur(0); }
     30%  { transform: scale(1.25); opacity: 0.8; filter: blur(0.5px); }
-    100% { transform: scale(1.6); opacity: 0; filter: blur(4px); }
+    100% { transform: scale(1.6);  opacity: 0;   filter: blur(4px); }
   }
 
-  /* Капельки после лопания */
   .droplet {
     position: absolute;
     border-radius: 50%;
@@ -119,367 +605,327 @@
       rgba(255,255,255,0.9),
       rgba(200, 220, 255, 0.5));
     pointer-events: none;
-    will-change: transform, opacity;
   }
 
-  /* Кастомный курсор — маленький пузырик */
-  #cursor {
-    position: fixed;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 1.5px solid rgba(255, 255, 255, 0.8);
-    background: radial-gradient(circle at 30% 30%,
-      rgba(255,255,255,0.5),
-      rgba(200, 220, 255, 0.1));
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    transition: width 0.15s, height 0.15s, background 0.15s;
-    mix-blend-mode: normal;
+  /* ==================== АДАПТИВ ==================== */
+  @media (max-width: 720px) {
+    nav { padding: 20px 24px; }
+    .nav-link { padding: 8px 12px; font-size: 0.6rem; letter-spacing: 0.2em; }
+    .home, .music, .interactive-intro { padding-left: 24px; padding-right: 24px; }
+    .home-meta { right: 24px; bottom: 24px; }
+    #bubble-stage { width: calc(100% - 32px); height: 65vh; border-radius: 24px; }
   }
 
-  #cursor.click {
-    width: 36px;
-    height: 36px;
-    background: radial-gradient(circle, rgba(255,200,220,0.4), transparent);
-  }
-
-  /* Заголовок */
-  header {
-    position: fixed;
-    top: 40px;
-    left: 50px;
-    z-index: 5;
-    pointer-events: none;
-    mix-blend-mode: multiply;
-  }
-
-  h1 {
-    font-family: 'Fraunces', serif;
-    font-weight: 300;
-    font-style: italic;
-    font-size: clamp(2.5rem, 6vw, 5rem);
-    color: #4a3960;
-    letter-spacing: -0.02em;
-    line-height: 0.95;
-    opacity: 0.85;
-  }
-
-  .subtitle {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.3em;
-    color: #6b5a80;
-    margin-top: 18px;
-    opacity: 0.6;
-  }
-
-  /* Счётчик */
-  #counter {
-    position: fixed;
-    bottom: 40px;
-    right: 50px;
-    z-index: 5;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.25em;
-    color: #4a3960;
-    opacity: 0.55;
-    pointer-events: none;
-    text-align: right;
-  }
-
-  #counter .num {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-weight: 300;
-    font-size: 2.8rem;
-    display: block;
-    letter-spacing: -0.02em;
-    margin-top: 4px;
-    color: #2d2440;
-    opacity: 0.9;
-  }
-
-  /* Подсказка */
-  .hint {
-    position: fixed;
-    bottom: 40px;
-    left: 50px;
-    z-index: 5;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.3em;
-    color: #6b5a80;
-    opacity: 0.5;
-    pointer-events: none;
-  }
-
-  @media (max-width: 600px) {
-    header { top: 24px; left: 24px; }
-    #counter { bottom: 24px; right: 24px; }
-    .hint { bottom: 24px; left: 24px; font-size: 0.55rem; }
-  }
-
-  /* Кнопка звука */
-  #soundToggle {
-    position: fixed;
-    top: 40px;
-    right: 50px;
-    z-index: 5;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: 1px solid rgba(74, 57, 96, 0.2);
-    background: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: #4a3960;
-    cursor: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.3s, transform 0.2s, border-color 0.3s;
-    opacity: 0.7;
-  }
-
-  #soundToggle:hover {
-    background: rgba(255, 255, 255, 0.7);
-    border-color: rgba(74, 57, 96, 0.4);
-    opacity: 1;
-    transform: scale(1.05);
-  }
-
-  #soundToggle.active {
-    background: rgba(255, 220, 240, 0.5);
-    border-color: rgba(180, 100, 160, 0.4);
-    opacity: 1;
-  }
-
-  @media (max-width: 600px) {
-    #soundToggle { top: 24px; right: 24px; width: 40px; height: 40px; }
+  @media (max-width: 480px) {
+    .nav-links { gap: 0; }
+    .logo { font-size: 1.2rem; }
   }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>пузыри</h1>
-  <div class="subtitle">тихий полдень</div>
-</header>
-
-<div class="hint">наведи · кликни · включи звук</div>
-
-<button id="soundToggle" aria-label="Включить звук">
-  <svg id="iconOff" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M11 5L6 9H2v6h4l5 4V5z"/>
-    <line x1="23" y1="9" x2="17" y2="15"/>
-    <line x1="17" y1="9" x2="23" y2="15"/>
-  </svg>
-  <svg id="iconOn" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none">
-    <path d="M11 5L6 9H2v6h4l5 4V5z"/>
-    <path d="M15.54 8.46a5 5 0 010 7.07"/>
-    <path d="M19.07 4.93a10 10 0 010 14.14"/>
-  </svg>
-</button>
-
-<div id="counter">
-  лопнуло
-  <span class="num" id="popCount">0</span>
+<!-- Анимированный градиентный фон -->
+<div class="gradient-bg">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
 </div>
+<div class="grain"></div>
 
-<div id="scene"></div>
-<div id="cursor"></div>
+<!-- Навигация -->
+<nav>
+  <a href="#/" class="logo">bubbles<span class="logo-dot"></span></a>
+  <ul class="nav-links">
+    <li><a href="#/" class="nav-link" data-route="/">Главная</a></li>
+    <li><a href="#/music" class="nav-link" data-route="/music">Музыка</a></li>
+    <li><a href="#/bubbles" class="nav-link" data-route="/bubbles">Интерактив</a></li>
+  </ul>
+</nav>
+
+<main>
+  <!-- ==================== ГЛАВНАЯ ==================== -->
+  <section class="home page" data-page="/">
+    <div class="home-eyebrow">Тихий полдень · 2026</div>
+    <h1 class="home-title">
+      Мыльные<br>
+      <span class="accent">пузыри</span>
+    </h1>
+    <p class="home-lede">
+      Маленькое цифровое пространство, где можно ничего не делать —
+      только смотреть, как медленно поднимаются пузыри, и трогать их,
+      когда захочется услышать тихий «плоп».
+    </p>
+    <a href="#/bubbles" class="home-cta">
+      <span>Открыть сцену</span>
+      <span class="home-cta-arrow">→</span>
+    </a>
+    <div class="home-meta">
+      © пустяки<br>
+      сделано из воздуха
+    </div>
+  </section>
+
+  <!-- ==================== МУЗЫКА ==================== -->
+  <section class="music page" data-page="/music">
+    <div class="page-eyebrow">Звук</div>
+    <h2 class="page-title">Из воздуха<br><em>и формул</em></h2>
+
+    <p class="music-text">
+      Здесь нет ни одного аудиофайла. <strong>Вся музыка собирается прямо
+      в браузере</strong> через Web Audio API — синтезатор оживает в момент
+      нажатия кнопки и затихает, когда ты уходишь со страницы.
+    </p>
+    <p class="music-text">
+      Эмбиент построен на пентатонике C-мажор: мягкие синусоидальные тона
+      с долгими атаками и затуханиями плавают слоями, никогда не повторяясь
+      в одном и том же сочетании.
+    </p>
+
+    <div class="player" id="player">
+      <div class="player-label">Композиция</div>
+      <div class="player-title">Бесконечный полдень</div>
+      <div class="player-controls">
+        <button class="play-btn" id="playBtn" aria-label="Воспроизвести">
+          <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="pauseIcon" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+        </button>
+        <div class="player-viz">
+          <div class="viz-bar"></div><div class="viz-bar"></div>
+          <div class="viz-bar"></div><div class="viz-bar"></div>
+          <div class="viz-bar"></div><div class="viz-bar"></div>
+          <div class="viz-bar"></div><div class="viz-bar"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== ИНТЕРАКТИВ ==================== -->
+  <section class="interactive page" data-page="/bubbles">
+    <div class="interactive-intro">
+      <div class="page-eyebrow">Сцена</div>
+      <h2 class="page-title">Пузыри</h2>
+      <p class="interactive-text">
+        Они появляются снизу и медленно плывут вверх. Кликни, чтобы лопнуть —
+        и услышать звук, если включишь его в правом нижнем углу.
+      </p>
+    </div>
+
+    <div id="bubble-stage">
+      <div class="stage-counter">
+        Лопнуло
+        <span class="num" id="popCount">0</span>
+      </div>
+      <div class="stage-hint">наведи · кликни</div>
+      <button class="stage-sound" id="soundToggle" aria-label="Звук">
+        <svg id="iconOff" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+          <line x1="23" y1="9" x2="17" y2="15"/>
+          <line x1="17" y1="9" x2="23" y2="15"/>
+        </svg>
+        <svg id="iconOn" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+          <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+          <path d="M15.54 8.46a5 5 0 010 7.07"/>
+          <path d="M19.07 4.93a10 10 0 010 14.14"/>
+        </svg>
+      </button>
+    </div>
+  </section>
+</main>
 
 <script>
-  // ============ ЗВУКОВОЙ ДВИЖОК ============
-  let audioCtx = null;
-  let masterGain = null;
-  let ambientStarted = false;
-  let soundEnabled = false;
+// ==================== HASH-РОУТИНГ ====================
+// Используем hash-роуты (#/, #/music, #/bubbles) — это работает на любом
+// статическом хостинге (включая GitHub Pages) без серверной настройки rewrite.
+const routes = ['/', '/music', '/bubbles'];
 
-  function initAudio() {
-    if (audioCtx) return;
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    masterGain = audioCtx.createGain();
-    masterGain.gain.value = 0.25;
-    masterGain.connect(audioCtx.destination);
+function navigate() {
+  const hash = window.location.hash.replace(/^#/, '') || '/';
+  const route = routes.includes(hash) ? hash : '/';
+
+  // Подсветить активную страницу
+  document.querySelectorAll('.page').forEach(el => {
+    el.classList.toggle('active', el.dataset.page === route);
+  });
+
+  // Подсветить активную ссылку в навигации
+  document.querySelectorAll('.nav-link').forEach(el => {
+    el.classList.toggle('active', el.dataset.route === route);
+  });
+
+  // Управление сценой пузырей: запускаем только когда страница активна
+  if (route === '/bubbles') {
+    BubbleScene.start();
+  } else {
+    BubbleScene.stop();
   }
 
-  // Звук лопающегося пузыря — короткий "плоп"
-  function playPop() {
-    if (!soundEnabled || !audioCtx) return;
-    const now = audioCtx.currentTime;
-
-    // Основной тон — быстрое падение частоты
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    const filter = audioCtx.createBiquadFilter();
-
-    osc.type = 'sine';
-    const startFreq = 600 + Math.random() * 400; // вариативность для естественности
-    osc.frequency.setValueAtTime(startFreq, now);
-    osc.frequency.exponentialRampToValueAtTime(80, now + 0.12);
-
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(2000, now);
-    filter.frequency.exponentialRampToValueAtTime(200, now + 0.12);
-    filter.Q.value = 8;
-
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.4, now + 0.005);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(masterGain);
-
-    osc.start(now);
-    osc.stop(now + 0.2);
-
-    // Шумовой "хвостик" — водянистая текстура
-    const bufferSize = audioCtx.sampleRate * 0.1;
-    const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const noiseData = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      noiseData[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
-    }
-    const noise = audioCtx.createBufferSource();
-    noise.buffer = noiseBuffer;
-    const noiseFilter = audioCtx.createBiquadFilter();
-    noiseFilter.type = 'bandpass';
-    noiseFilter.frequency.value = 1500;
-    noiseFilter.Q.value = 2;
-    const noiseGain = audioCtx.createGain();
-    noiseGain.gain.setValueAtTime(0.08, now);
-    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-
-    noise.connect(noiseFilter);
-    noiseFilter.connect(noiseGain);
-    noiseGain.connect(masterGain);
-    noise.start(now);
+  // Останавливаем плеер на других страницах, чтобы не играл фоном
+  if (route !== '/music' && Player.isPlaying()) {
+    Player.toggle();
   }
 
-  // Эмбиент — медленные перекрывающиеся ноты в пентатонике
-  // C, D, E, G, A — этих нот пентатоники нет диссонанса между собой,
-  // поэтому любая комбинация звучит мягко
-  const pentatonic = [
-    261.63, // C4
-    293.66, // D4
-    329.63, // E4
-    392.00, // G4
-    440.00, // A4
-    523.25, // C5
-    587.33, // D5
-    659.25  // E5
-  ];
+  window.scrollTo(0, 0);
+}
 
-  function playAmbientNote() {
-    if (!soundEnabled || !audioCtx) return;
-    const now = audioCtx.currentTime;
+window.addEventListener('hashchange', navigate);
+window.addEventListener('DOMContentLoaded', navigate);
 
-    const freq = pentatonic[Math.floor(Math.random() * pentatonic.length)];
-    const duration = 4 + Math.random() * 4; // 4-8 секунд
+// ==================== ОБЩИЙ АУДИО-ДВИЖОК ====================
+// Один AudioContext на всё приложение, разделяемый между плеером и пузырями.
+const Audio = {
+  ctx: null,
+  master: null,
 
-    // Основной тон + мягкая октава для богатства
-    const osc1 = audioCtx.createOscillator();
-    const osc2 = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    const filter = audioCtx.createBiquadFilter();
+  init() {
+    if (this.ctx) return;
+    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    this.master = this.ctx.createGain();
+    this.master.gain.value = 0.25;
+    this.master.connect(this.ctx.destination);
+  },
 
-    osc1.type = 'sine';
-    osc2.type = 'sine';
-    osc1.frequency.value = freq;
-    osc2.frequency.value = freq * 2;
-    // Лёгкое расстройство — "хорус" эффект
-    osc2.detune.value = (Math.random() - 0.5) * 8;
+  resume() {
+    if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+  }
+};
 
-    filter.type = 'lowpass';
-    filter.frequency.value = 1500;
-    filter.Q.value = 1;
+// Пентатоника C-мажор — любые ноты звучат гармонично вместе
+const PENTATONIC = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
 
-    // Плавная огибающая: долгая атака, долгое затухание
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(0.06, now + duration * 0.4);
-    gain.gain.linearRampToValueAtTime(0, now + duration);
+function playAmbientNote(getEnabled, scheduleNext) {
+  if (!getEnabled()) return;
+  const ctx = Audio.ctx;
+  const now = ctx.currentTime;
 
-    osc1.connect(filter);
-    osc2.connect(filter);
-    filter.connect(gain);
-    gain.connect(masterGain);
+  const freq = PENTATONIC[Math.floor(Math.random() * PENTATONIC.length)];
+  const duration = 4 + Math.random() * 4;
 
-    osc1.start(now);
-    osc2.start(now);
-    osc1.stop(now + duration);
-    osc2.stop(now + duration);
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const filter = ctx.createBiquadFilter();
 
-    // Следующая нота с задержкой
+  osc1.type = 'sine';
+  osc2.type = 'sine';
+  osc1.frequency.value = freq;
+  osc2.frequency.value = freq * 2;
+  osc2.detune.value = (Math.random() - 0.5) * 8;
+
+  filter.type = 'lowpass';
+  filter.frequency.value = 1500;
+  filter.Q.value = 1;
+
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.06, now + duration * 0.4);
+  gain.gain.linearRampToValueAtTime(0, now + duration);
+
+  osc1.connect(filter); osc2.connect(filter);
+  filter.connect(gain);
+  gain.connect(Audio.master);
+
+  osc1.start(now); osc2.start(now);
+  osc1.stop(now + duration); osc2.stop(now + duration);
+
+  if (scheduleNext) {
     const nextDelay = 1500 + Math.random() * 3500;
-    setTimeout(playAmbientNote, nextDelay);
+    setTimeout(() => playAmbientNote(getEnabled, scheduleNext), nextDelay);
+  }
+}
+
+function playPopSound(getEnabled) {
+  if (!getEnabled()) return;
+  const ctx = Audio.ctx;
+  const now = ctx.currentTime;
+
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  const filter = ctx.createBiquadFilter();
+
+  osc.type = 'sine';
+  const startFreq = 600 + Math.random() * 400;
+  osc.frequency.setValueAtTime(startFreq, now);
+  osc.frequency.exponentialRampToValueAtTime(80, now + 0.12);
+
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(2000, now);
+  filter.frequency.exponentialRampToValueAtTime(200, now + 0.12);
+  filter.Q.value = 8;
+
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.4, now + 0.005);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+  osc.connect(filter);
+  filter.connect(gain);
+  gain.connect(Audio.master);
+
+  osc.start(now);
+  osc.stop(now + 0.2);
+}
+
+// ==================== ПЛЕЕР НА СТРАНИЦЕ МУЗЫКИ ====================
+const Player = (() => {
+  let playing = false;
+  let started = false;
+  const playerEl = document.getElementById('player');
+  const btn = document.getElementById('playBtn');
+  const iconPlay = document.getElementById('playIcon');
+  const iconPause = document.getElementById('pauseIcon');
+
+  function toggle() {
+    Audio.init();
+    Audio.resume();
+    playing = !playing;
+    playerEl.classList.toggle('playing', playing);
+    iconPlay.style.display = playing ? 'none' : 'block';
+    iconPause.style.display = playing ? 'block' : 'none';
+
+    if (playing && !started) {
+      // Стартуем три перекрывающиеся слоя
+      started = true;
+      playAmbientNote(() => playing, true);
+      setTimeout(() => playAmbientNote(() => playing, true), 800);
+      setTimeout(() => playAmbientNote(() => playing, true), 2200);
+    }
   }
 
-  function startAmbient() {
-    if (ambientStarted) return;
-    ambientStarted = true;
-    // Стартуем 2-3 ноты с разнесением по времени для слоистости
-    playAmbientNote();
-    setTimeout(playAmbientNote, 800);
-    setTimeout(playAmbientNote, 2200);
-  }
+  btn.addEventListener('click', toggle);
 
-  // Кнопка переключения звука
-  const soundToggle = document.getElementById('soundToggle');
+  return {
+    toggle,
+    isPlaying: () => playing
+  };
+})();
+
+// ==================== СЦЕНА ПУЗЫРЕЙ ====================
+const BubbleScene = (() => {
+  const stage = document.getElementById('bubble-stage');
+  const popCountEl = document.getElementById('popCount');
+  const soundBtn = document.getElementById('soundToggle');
   const iconOff = document.getElementById('iconOff');
   const iconOn = document.getElementById('iconOn');
 
-  soundToggle.addEventListener('click', () => {
-    initAudio();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-
-    soundEnabled = !soundEnabled;
-    soundToggle.classList.toggle('active', soundEnabled);
-    iconOff.style.display = soundEnabled ? 'none' : 'block';
-    iconOn.style.display = soundEnabled ? 'block' : 'none';
-
-    if (soundEnabled) {
-      // Плавный fade-in мастера
-      masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-      masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
-      masterGain.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + 1);
-      startAmbient();
-    } else {
-      masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-      masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
-    }
-  });
-
-  // ============ ОСНОВНАЯ СЦЕНА ============
-  const scene = document.getElementById('scene');
-  const cursor = document.getElementById('cursor');
-  const popCountEl = document.getElementById('popCount');
+  let bubbles = [];
   let popCount = 0;
+  let rafId = null;
+  let spawnInterval = null;
+  let soundEnabled = false;
+  let running = false;
 
-  // Кастомный курсор
-  document.addEventListener('mousemove', (e) => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-  });
-  document.addEventListener('mousedown', () => cursor.classList.add('click'));
-  document.addEventListener('mouseup', () => cursor.classList.remove('click'));
+  // Размер сцены измеряется по контейнеру, а не по окну
+  function getSize() {
+    const r = stage.getBoundingClientRect();
+    return { w: r.width, h: r.height };
+  }
 
-  // Класс пузыря с физикой
   class Bubble {
     constructor() {
-      this.size = 40 + Math.random() * 110; // 40 - 150 px
-      this.x = Math.random() * (window.innerWidth - this.size);
-      this.y = window.innerHeight + this.size + Math.random() * 200;
-      // медленное движение вверх
-      this.vy = -(0.8 + Math.random() * 1.2);
-      // Лёгкое покачивание по горизонтали
+      const { w, h } = getSize();
+      this.size = 40 + Math.random() * 100;
+      this.x = Math.random() * (w - this.size);
+      this.y = h + this.size + Math.random() * 100;
+      this.vy = -(0.3 + Math.random() * 0.5);
       this.vx = (Math.random() - 0.5) * 0.3;
       this.swayPhase = Math.random() * Math.PI * 2;
       this.swaySpeed = 0.005 + Math.random() * 0.008;
@@ -491,30 +937,22 @@
       this.el.style.height = this.size + 'px';
       this.el.style.transform = `translate(${this.x}px, ${this.y}px)`;
       this.el.addEventListener('click', () => this.pop());
-      scene.appendChild(this.el);
-
+      stage.appendChild(this.el);
       this.alive = true;
     }
 
     update() {
       if (!this.alive) return;
+      const { w, h } = getSize();
       this.swayPhase += this.swaySpeed;
       this.x += this.vx + Math.sin(this.swayPhase) * this.swayAmount;
       this.y += this.vy;
 
-      // Отталкивание от краёв экрана
       if (this.x < 0) { this.x = 0; this.vx = Math.abs(this.vx); }
-      if (this.x > window.innerWidth - this.size) {
-        this.x = window.innerWidth - this.size;
-        this.vx = -Math.abs(this.vx);
-      }
+      if (this.x > w - this.size) { this.x = w - this.size; this.vx = -Math.abs(this.vx); }
 
       this.el.style.transform = `translate(${this.x}px, ${this.y}px)`;
-
-      // Если уплыл выше экрана — удалить
-      if (this.y < -this.size - 20) {
-        this.destroy();
-      }
+      if (this.y < -this.size - 20) this.destroy();
     }
 
     pop() {
@@ -522,18 +960,12 @@
       this.alive = false;
       popCount++;
       popCountEl.textContent = popCount;
-
-      playPop();
-
+      playPopSound(() => soundEnabled);
       this.el.classList.add('pop');
 
-      // Создаём капельки-брызги
       const cx = this.x + this.size / 2;
       const cy = this.y + this.size / 2;
-      const droplets = 6 + Math.floor(Math.random() * 4);
-      for (let i = 0; i < droplets; i++) {
-        this.createDroplet(cx, cy);
-      }
+      for (let i = 0; i < 7; i++) this.createDroplet(cx, cy);
 
       setTimeout(() => this.destroy(), 450);
     }
@@ -546,20 +978,14 @@
       d.style.height = size + 'px';
       d.style.left = (cx - size / 2) + 'px';
       d.style.top = (cy - size / 2) + 'px';
-      scene.appendChild(d);
+      stage.appendChild(d);
 
       const angle = Math.random() * Math.PI * 2;
       const speed = 30 + Math.random() * 60;
-      const dx = Math.cos(angle) * speed;
-      const dy = Math.sin(angle) * speed;
-
       d.animate([
         { transform: 'translate(0, 0)', opacity: 0.9 },
-        { transform: `translate(${dx}px, ${dy + 30}px)`, opacity: 0 }
-      ], {
-        duration: 600 + Math.random() * 200,
-        easing: 'cubic-bezier(0.2, 0.6, 0.4, 1)'
-      });
+        { transform: `translate(${Math.cos(angle) * speed}px, ${Math.sin(angle) * speed + 30}px)`, opacity: 0 }
+      ], { duration: 600 + Math.random() * 200, easing: 'cubic-bezier(0.2, 0.6, 0.4, 1)' });
 
       setTimeout(() => d.remove(), 800);
     }
@@ -567,41 +993,60 @@
     destroy() {
       this.alive = false;
       if (this.el.parentNode) this.el.remove();
-      const idx = bubbles.indexOf(this);
-      if (idx > -1) bubbles.splice(idx, 1);
+      const i = bubbles.indexOf(this);
+      if (i > -1) bubbles.splice(i, 1);
     }
   }
 
-  const bubbles = [];
+  function tick() {
+    for (let i = bubbles.length - 1; i >= 0; i--) bubbles[i].update();
+    rafId = requestAnimationFrame(tick);
+  }
 
-  // Создание пузырей с интервалом
-  function spawnBubble() {
-    if (bubbles.length < 35) {
-      bubbles.push(new Bubble());
+  function spawn() {
+    if (bubbles.length < 30) bubbles.push(new Bubble());
+  }
+
+  function start() {
+    if (running) return;
+    running = true;
+
+    // Стартовая пачка с распределением по высоте
+    const { h } = getSize();
+    for (let i = 0; i < 8; i++) {
+      setTimeout(() => {
+        if (!running) return;
+        const b = new Bubble();
+        b.y = Math.random() * h;
+        bubbles.push(b);
+      }, i * 200);
     }
+
+    spawnInterval = setInterval(spawn, 800);
+    tick();
   }
 
-  // Стартовая пачка
-  for (let i = 0; i < 10; i++) {
-    setTimeout(() => {
-      const b = new Bubble();
-      // Распределяем по экрану на старте
-      b.y = Math.random() * window.innerHeight;
-      bubbles.push(b);
-    }, i * 200);
+  function stop() {
+    if (!running) return;
+    running = false;
+    cancelAnimationFrame(rafId);
+    clearInterval(spawnInterval);
+    bubbles.forEach(b => b.destroy());
+    bubbles = [];
   }
 
-  // Регулярный спавн
-  setInterval(spawnBubble, 500);
+  // Кнопка звука
+  soundBtn.addEventListener('click', () => {
+    Audio.init();
+    Audio.resume();
+    soundEnabled = !soundEnabled;
+    soundBtn.classList.toggle('active', soundEnabled);
+    iconOff.style.display = soundEnabled ? 'none' : 'block';
+    iconOn.style.display = soundEnabled ? 'block' : 'none';
+  });
 
-  // Анимационный цикл
-  function animate() {
-    for (let i = bubbles.length - 1; i >= 0; i--) {
-      bubbles[i].update();
-    }
-    requestAnimationFrame(animate);
-  }
-  animate();
+  return { start, stop };
+})();
 </script>
 
 </body>
