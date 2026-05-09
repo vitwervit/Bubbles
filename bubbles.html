@@ -544,9 +544,9 @@ const MazeGame = (() => {
   function resize() {
     const r=stage.getBoundingClientRect();
     canvas.width=r.width;canvas.height=r.height;
-    const cs=window.innerWidth<600?26:36;
-    cols=Math.max(5,Math.floor(r.width/cs));
-    rows=Math.max(5,Math.floor(r.height/cs));
+    const cs=window.innerWidth<600?78:108;
+    cols=Math.max(4,Math.floor(r.width/cs));
+    rows=Math.max(4,Math.floor(r.height/cs));
     cellW=r.width/cols;cellH=r.height/rows;
   }
 
