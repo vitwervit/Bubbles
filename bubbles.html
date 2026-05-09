@@ -550,7 +550,7 @@ const MazeGame = (() => {
   function resize() {
     const r=stage.getBoundingClientRect();
     canvas.width=r.width;canvas.height=r.height;
-    const cs=window.innerWidth<600?78:108;
+    const cs=window.innerWidth<600?59:81;
     cols=Math.max(4,Math.floor(r.width/cs));
     rows=Math.max(4,Math.floor(r.height/cs));
     cellW=r.width/cols;cellH=r.height/rows;
@@ -637,7 +637,13 @@ const MazeGame = (() => {
 
   resetBtn.addEventListener('click',reset);
   winBtn.addEventListener('click',reset);
-  window.addEventListener('resize',()=>{if(running)reset();});
+  window.addEventListener('resize',()=>{
+    if(!running||!cells.length)return;
+    const r=stage.getBoundingClientRect();
+    canvas.width=r.width;canvas.height=r.height;
+    cellW=r.width/cols;cellH=r.height/rows;
+    draw();
+  });
 
   return {
     start(){if(running)return;running=true;reset();},
